@@ -1,0 +1,22 @@
+{
+  "name": "bellite",
+  "version": "1.4.3",
+  "license": "MIT",
+  "description": "Bellite.io library bindings",
+  "keywords": [
+    "desktop", "app", "application", "gui", "ui",
+    "mac osx", "osx", "windows", "win32"],
+  "author": "Shane Holloway",
+  "readmeFilename": "README.md",
+
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bellite/bellite-node.git"},
+
+  "dependencies": {"fate": "*"},
+
+  "main": "bellite.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
