@@ -12,10 +12,11 @@ app.on('ready', function() {
     app.bindEvent(118, "*")
     app.unbindEvent(118, "*")
 
-    app.bindEvent(119, "appTimer", 2, {"myContext": 2142})
-    app.unbindEvent(119, "appTimer")
-
-    app.on('testComplete', function() { app.close() })
-    app.bindEvent(0, "testComplete")
-    app.perform(0, "testComplete")
+    app.on('testEvent', function(eobj) {
+        if (eobj.evt)
+            app.perform(0, eobj.evt)
+        else app.close()
+    })
+    app.bindEvent(0, "testEvent", 42, {'testCtx': true})
+    app.perform(0, "testEvent")
 })

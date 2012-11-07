@@ -15,13 +15,8 @@
     "type": "git",
     "url": "https://github.com/bellite/bellite-node.git"},
 
-  "dependencies": {
-      "fate": "*"},
-  "devDependencies": {
-      "vows": "0.6.x",
-      "expect": "",
-      "sinon": "1.5.x"},
+  "dependencies": {"fate": "*"},
 
   "main": "bellite.js",
-  "scripts": { "test": "vows --spec test/test*.js" }
+  "scripts": { "test": "node ./test/testClientJSONRPC.js" }
 }
