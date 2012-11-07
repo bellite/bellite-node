@@ -1,3 +1,12 @@
+/*-*- coding: utf-8 -*- vim: set ts=4 sw=4 expandtab
+##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##
+##~ Copyright (C) 2002-2012 Bellite.io                            ##
+##~                                                               ##
+##~ This library is free software; you can redistribute it        ##
+##~ and/or modify it under the terms of the MIT style License as  ##
+##~ found in the LICENSE file included with this distribution.    ##
+##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##*/
+
 "use strict";
 function createMockBelliteServer(ns) {
     var self = {
@@ -184,7 +193,7 @@ var assert=require('assert');
 
 testBelliteServer({
     execClient: function(spawn) {
-        spawn('node', [__dirname+'/_doBelliteTest.js'])
+        spawn('python', [__dirname+'/_doBelliteTest.py'])
     },
     timeout: 2000,
 }, function(err, log, opt) {
