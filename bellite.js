@@ -59,7 +59,6 @@ BelliteIPC.prototype.findCredentials = function(cred) {
     return res;
 }
 
-
 BelliteIPC.prototype.logSend = function (msg) {} //console.log('send ==> ', JSON.stringify(msg))}
 BelliteIPC.prototype.logRecv = function (msg) {} //console.log('recv <== ', JSON.stringify(msg))}
 
@@ -68,19 +67,17 @@ BelliteIPC.prototype._sendJsonRpc = function sendJsonRpc(method, params, id) {
     this.logSend(msg);
     return this._sendMessage(JSON.stringify(msg)) }
 BelliteIPC.prototype._recvJsonRpc = function recvJsonRpc(msgList) {
-    var i=0,n=msgList.length;
-    for(;i<n;++i) {
-        var msg = msgList[i];
+    while (msgList.length) {
+        var msg = msgList.shift();
         try { msg = JSON.parse(msg) }
-        catch (err) {
-            console.error("Bellite JSON-RPC error: ", err);
-            continue;
-        }
+        catch (err) { this.on_rpc_error(err, msg); continue }
         this.logRecv(msg);
         if (msg.method!==undefined)
             this.on_rpc_call(msg)
         else this.on_rpc_response(msg)
     } }
+BelliteIPC.prototype.on_rpc_error = function(err, msg) {
+    console.error("Bellite JSON-RPC error: ", err); }
 BelliteIPC.prototype.on_rpc_response = function(msg) {
     var tgt=this._resultMap[msg.id];
     delete this._resultMap[msg.id];
