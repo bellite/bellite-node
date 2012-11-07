@@ -4,10 +4,10 @@ var net = require('net'),
     events = require('events'),
     deferred = require('fate').deferred;
 
-exports.BelliteIPC = BelliteIPC;
-function BelliteIPC(cred) {
-    if (!(this instanceof BelliteIPC))
-        return new BelliteIPC(cred);
+exports.Bellite = Bellite;
+function Bellite(cred) {
+    if (!(this instanceof Bellite))
+        return new Bellite(cred);
 
     events.EventEmitter.call(this);
     this._resultMap = {};
@@ -24,9 +24,9 @@ function BelliteIPC(cred) {
     this._connect_jsonrpc(cred);
     return this;
 }
-util.inherits(BelliteIPC, events.EventEmitter);
+util.inherits(Bellite, events.EventEmitter);
 
-BelliteIPC.prototype._connect_jsonrpc = function(cred) {
+Bellite.prototype._connect_jsonrpc = function(cred) {
     var self=this, connBuf='', conn = net.connect(cred);
     conn.setEncoding("UTF-8");
     conn.setNoDelay(true);
@@ -43,7 +43,7 @@ BelliteIPC.prototype._connect_jsonrpc = function(cred) {
     self._shutdown = function() { conn.end(); }
     return conn;
 }
-BelliteIPC.prototype.findCredentials = function(cred) {
+Bellite.prototype.findCredentials = function(cred) {
     if (cred === undefined)
         cred = process.env.BELLITE_SERVER || '';
     else if (cred.split === undefined)
@@ -59,14 +59,14 @@ BelliteIPC.prototype.findCredentials = function(cred) {
     return res;
 }
 
-BelliteIPC.prototype.logSend = function (msg) {} //console.log('send ==> ', JSON.stringify(msg))}
-BelliteIPC.prototype.logRecv = function (msg) {} //console.log('recv <== ', JSON.stringify(msg))}
+Bellite.prototype.logSend = function (msg) {} //console.log('send ==> ', JSON.stringify(msg))}
+Bellite.prototype.logRecv = function (msg) {} //console.log('recv <== ', JSON.stringify(msg))}
 
-BelliteIPC.prototype._sendJsonRpc = function sendJsonRpc(method, params, id) {
+Bellite.prototype._sendJsonRpc = function sendJsonRpc(method, params, id) {
     var msg = {jsonrpc: "2.0", id:id, method:method, params:params}
     this.logSend(msg);
     return this._sendMessage(JSON.stringify(msg)) }
-BelliteIPC.prototype._recvJsonRpc = function recvJsonRpc(msgList) {
+Bellite.prototype._recvJsonRpc = function recvJsonRpc(msgList) {
     while (msgList.length) {
         var msg = msgList.shift();
         try { msg = JSON.parse(msg) }
@@ -76,22 +76,22 @@ BelliteIPC.prototype._recvJsonRpc = function recvJsonRpc(msgList) {
             this.on_rpc_call(msg)
         else this.on_rpc_response(msg)
     } }
-BelliteIPC.prototype.on_rpc_error = function(err, msg) {
+Bellite.prototype.on_rpc_error = function(err, msg) {
     console.error("Bellite JSON-RPC error: ", err); }
-BelliteIPC.prototype.on_rpc_response = function(msg) {
+Bellite.prototype.on_rpc_response = function(msg) {
     var tgt=this._resultMap[msg.id];
     delete this._resultMap[msg.id];
     if (tgt==null) return
     if (msg.error!==undefined)
         tgt.reject(msg.error)
     else tgt.resolve(msg.result) }
-BelliteIPC.prototype.on_rpc_call = function(msg) {
+Bellite.prototype.on_rpc_call = function(msg) {
     var args=msg.params;
     if (msg.method == 'event')
         this.emit(args.evtType, args) }
 
-BelliteIPC.prototype._nextId = 100;
-BelliteIPC.prototype._invoke = function(method, params) {
+Bellite.prototype._nextId = 100;
+Bellite.prototype._invoke = function(method, params) {
     var id = this._nextId++,
         res = deferred(this);
     res.method = method;
@@ -99,33 +99,33 @@ BelliteIPC.prototype._invoke = function(method, params) {
     this._sendJsonRpc(method, params, id);
     return res.promise;}
 
-BelliteIPC.prototype.close = function() {
+Bellite.prototype.close = function() {
     return this._shutdown(); }
-BelliteIPC.prototype.auth = function(token) {
+Bellite.prototype.auth = function(token) {
     return this._invoke('auth', [token]) }
-BelliteIPC.prototype.version = function() {
+Bellite.prototype.version = function() {
     return this._invoke('version') }
-BelliteIPC.prototype.ping = function() {
+Bellite.prototype.ping = function() {
     return this._invoke('ping') }
-BelliteIPC.prototype.respondsTo = function(selfId, cmd) {
+Bellite.prototype.respondsTo = function(selfId, cmd) {
     if (!selfId) selfId = 0;
     return this._invoke('respondsTo', [selfId, cmd||""]) }
-BelliteIPC.prototype.perform = function(selfId, cmd, args) {
+Bellite.prototype.perform = function(selfId, cmd, args) {
     if (!selfId) selfId = 0;
     return this._invoke('perform', [selfId, cmd||"", args]) }
-BelliteIPC.prototype.bindEvent = function(selfId, evtType, res, ctx) {
+Bellite.prototype.bindEvent = function(selfId, evtType, res, ctx) {
     if (!selfId) selfId = 0;
     if (evtType===undefined) evtType = null;
     if (res===undefined) res = -1;
     return this._invoke('bindEvent', [selfId, evtType, res, ctx]); }
-BelliteIPC.prototype.unbindEvent = function(selfId, evtType) {
+Bellite.prototype.unbindEvent = function(selfId, evtType) {
     if (!selfId) selfId = 0;
     if (evtType==undefined) evtType = null;
     return this._invoke('unbindEvent', [selfId, evtType]); }
 
-BelliteIPC.prototype.on_auth_succeeded = function(msg) {
+Bellite.prototype.on_auth_succeeded = function(msg) {
     this.emit('auth', true, msg)
     this.emit('ready', msg) }
-BelliteIPC.prototype.on_auth_failed = function(msg) {
+Bellite.prototype.on_auth_failed = function(msg) {
     this.emit('auth', false, msg) }
 
