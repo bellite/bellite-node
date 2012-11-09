@@ -14,9 +14,9 @@ var net = require('net'),
     deferred = require('fate').deferred;
 
 exports.Bellite = Bellite;
-function Bellite(cred) {
+function Bellite(cred, logging) {
     if (!(this instanceof Bellite))
-        return new Bellite(cred);
+        return new Bellite(cred, logging);
 
     events.EventEmitter.call(this);
     this._resultMap = {};
@@ -24,6 +24,10 @@ function Bellite(cred) {
     cred = this.findCredentials(cred);
     if (cred == null)
         throw new Error("Invalid Bellite credentials");
+    if (logging) {
+        this.logSend = this._logSend
+        this.logRecv = this._logRecv
+    }
 
     this.on('connect', function(){ this.on_connect(cred) })
     this._connect_jsonrpc(cred);
@@ -49,7 +53,7 @@ Bellite.prototype._connect_jsonrpc = function(cred) {
     return conn;
 }
 Bellite.prototype.findCredentials = function(cred) {
-    if (cred === undefined)
+    if (cred == null)
         cred = process.env.BELLITE_SERVER || '';
     else if (cred.split === undefined)
         return cred;
@@ -64,8 +68,12 @@ Bellite.prototype.findCredentials = function(cred) {
     return res;
 }
 
-Bellite.prototype.logSend = function (msg) {} //console.log('send ==> ', JSON.stringify(msg))}
-Bellite.prototype.logRecv = function (msg) {} //console.log('recv <== ', JSON.stringify(msg))}
+Bellite.prototype._logSend = function (msg) {
+    console.log('send ==> ', JSON.stringify(msg))}
+Bellite.prototype.logSend = function (msg) {}
+Bellite.prototype._logRecv = function (msg) {
+    console.log('recv <== ', JSON.stringify(msg))}
+Bellite.prototype.logRecv = function (msg) {}
 
 Bellite.prototype._sendJsonRpc = function sendJsonRpc(method, params, id) {
     var msg = {jsonrpc: "2.0", id:id, method:method, params:params}
