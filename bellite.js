@@ -53,9 +53,13 @@ Bellite.prototype._connect_jsonrpc = function(cred) {
     return conn;
 }
 Bellite.prototype.findCredentials = function(cred) {
-    if (cred == null)
-        cred = process.env.BELLITE_SERVER || '';
-    else if (cred.split === undefined)
+    if (cred == null) {
+        cred = process.env.BELLITE_SERVER;
+        if (!cred) {
+            cred = '127.0.0.1:3099/bellite-demo-host';
+            console.warn('BELLITE_SERVER environment variable not found, using "'+cred+'"')
+        }
+    } else if (cred.split === undefined)
         return cred;
     var res={credentials:cred};
     cred = cred.split('/',2);
