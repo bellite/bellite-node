@@ -9,7 +9,7 @@
 
 "use strict";
 var bellite=require('../bellite.js'),
-    app = bellite.Bellite(null, true);
+    app = bellite.Bellite();
 
 //console.log("testBellite!", process.env.BELLITE_SERVER)
 app.on('ready', function() {
