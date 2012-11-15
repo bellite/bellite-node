@@ -38,7 +38,7 @@ function createMockBelliteServer(ns) {
 
         var api = {
             sendMessage: function(msg) {
-                if (debugLog) debugLog('send ==> ', msg);
+                if (debugLog) debugLog('reply  ==> ', msg);
                 return conn.write(msg+'\0') },
             shutdown: function() { return conn.end() },
             fireEvent: function(evtType, selfId, evt, ctx) {
@@ -67,7 +67,7 @@ function createMockBelliteServer(ns) {
             connBuf = data.pop()
             while (data.length) {
                 var msg = data.shift();
-                if (debugLog) debugLog('recv <== ', msg);
+                if (debugLog) debugLog('invoke <== ', msg);
                 try { msg = JSON.parse(msg) }
                 catch (err) { tgt.parse_error(err, msg); continue }
                 if (msg.method!==undefined)
