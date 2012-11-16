@@ -29,7 +29,9 @@ function Bellite(cred, logging) {
         this.logRecv = this._logRecv
     }
 
-    this.on('connect', function(){ this.on_connect(cred) })
+    var f_ready = deferred();
+    this.ready = f_ready.promise;
+    this.on('connect', function(){ this.on_connect(cred, f_ready) })
     this._connect_jsonrpc(cred);
     return this;
 }
@@ -140,9 +142,10 @@ Bellite.prototype.unbindEvent = function(selfId, evtType) {
     if (evtType==undefined) evtType = null;
     return this._invoke('unbindEvent', [selfId, evtType]); }
 
-Bellite.prototype.on_connect = function(cred) {
-    this.auth(cred.token).then(
-        this.on_auth_succeeded, this.on_auth_failed) }
+Bellite.prototype.on_connect = function(cred, f_ready) {
+    this.auth(cred.token)
+        .then(f_ready.resolve, f_ready.reject)
+        .then(this.on_auth_succeeded, this.on_auth_failed) }
 Bellite.prototype.on_auth_succeeded = function(msg) {
     this.emit('auth', true, msg)
     this.emit('ready', msg) }
