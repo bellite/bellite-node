@@ -49,6 +49,8 @@ Bellite.prototype._connect_jsonrpc = function(cred) {
         data = (connBuf+data).split('\0')
         connBuf = data.pop()
         self._recvJsonRpc(data); });
+    conn.on('close', function() {
+        self.emit('close') })
     self._sendMessage = function sendMessage(msg) {
         return conn.write(msg+'\0') }
     self._shutdown = function() { conn.end(); }
