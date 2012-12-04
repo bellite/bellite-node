@@ -24,10 +24,7 @@ function Bellite(cred, logging) {
     cred = this.findCredentials(cred);
     if (cred == null)
         throw new Error("Invalid Bellite credentials");
-    if (logging) {
-        this.logSend = this._logSend
-        this.logRecv = this._logRecv
-    }
+    this._logging = !!logging;
 
     var f_ready = deferred();
     this.ready = f_ready.promise;
@@ -76,12 +73,10 @@ Bellite.prototype.findCredentials = function(cred) {
     return res;
 }
 
-Bellite.prototype._logSend = function (msg) {
-    console.log('send ==> ', JSON.stringify(msg))}
-Bellite.prototype.logSend = function (msg) {}
-Bellite.prototype._logRecv = function (msg) {
-    console.log('recv <== ', JSON.stringify(msg))}
-Bellite.prototype.logRecv = function (msg) {}
+Bellite.prototype.logSend = function (msg) {
+    if (this._logging) console.log('send ==> ', JSON.stringify(msg))}
+Bellite.prototype.logRecv = function (msg) {
+    if (this._logging) console.log('recv <== ', JSON.stringify(msg))}
 
 Bellite.prototype._sendJsonRpc = function sendJsonRpc(method, params, id) {
     var msg = {jsonrpc: "2.0", id:id, method:method, params:params}
