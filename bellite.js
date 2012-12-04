@@ -29,17 +29,23 @@ function Bellite(cred, logging) {
     var f_ready = deferred();
     this.ready = f_ready.promise;
     this.on('connect', function(){ this.on_connect(cred, f_ready) })
-    this._connect_jsonrpc(cred);
+    this._connect_jsonrpc(cred, f_ready);
     return this;
 }
 util.inherits(Bellite, events.EventEmitter);
 
-Bellite.prototype._connect_jsonrpc = function(cred) {
+Bellite.prototype._connect_jsonrpc = function(cred, f_ready) {
     var self=this, connBuf='', conn = net.connect(cred);
     conn.setEncoding("UTF-8");
     conn.setNoDelay(true);
     conn.setKeepAlive(true, 0);
 
+    conn.on('error', function(err) {
+        if (this._logging || this._logging==null)
+            console.warn('Error connecting to Bellite server', cred, err)
+        f_ready.reject(err);
+        conn.destroy();
+        self.emit('conn_error', err); })
     conn.on('connect', function() {
         self.emit('connect') });
     conn.on('data', function(data) {
@@ -58,7 +64,8 @@ Bellite.prototype.findCredentials = function(cred) {
         cred = process.env.BELLITE_SERVER;
         if (!cred) {
             cred = '127.0.0.1:3099/bellite-demo-host';
-            console.warn('BELLITE_SERVER environment variable not found, using "'+cred+'"')
+            if (this._logging || this._logging==null)
+                console.warn('BELLITE_SERVER environment variable not found, using "'+cred+'"')
         }
     } else if (cred.split === undefined)
         return cred;
