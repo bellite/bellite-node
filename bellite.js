@@ -20,11 +20,11 @@ function Bellite(cred, logging) {
 
     events.EventEmitter.call(this);
     this._resultMap = {};
+    this._logging = logging ? true : (logging!=null ? false : null);
 
     cred = this.findCredentials(cred);
     if (cred == null)
         throw new Error("Invalid Bellite credentials");
-    this._logging = !!logging;
 
     var f_ready = deferred();
     this.ready = f_ready.promise;
@@ -41,8 +41,8 @@ Bellite.prototype._connect_jsonrpc = function(cred, f_ready) {
     conn.setKeepAlive(true, 0);
 
     conn.on('error', function(err) {
-        if (this._logging || this._logging==null)
-            console.warn('Error connecting to Bellite server', cred, err)
+        if (self._logging!==false)
+            console.warn('Error connecting to Bellite server', cred, err, self._logging)
         f_ready.reject(err);
         conn.destroy();
         self.emit('conn_error', err); })
@@ -64,8 +64,8 @@ Bellite.prototype.findCredentials = function(cred) {
         cred = process.env.BELLITE_SERVER;
         if (!cred) {
             cred = '127.0.0.1:3099/bellite-demo-host';
-            if (this._logging || this._logging==null)
-                console.warn('BELLITE_SERVER environment variable not found, using "'+cred+'"')
+            if (this._logging!==false)
+                console.warn('BELLITE_SERVER environment variable not found, using "'+cred+'"', this._logging)
         }
     } else if (cred.split === undefined)
         return cred;
