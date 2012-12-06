@@ -119,7 +119,8 @@ Bellite.prototype._invoke = function(method, params) {
         res = deferred(this);
     res.method = method;
     this._resultMap[id] = res;
-    this._sendJsonRpc(method, params, id);
+    if (!this._sendJsonRpc(method, params, id))
+        res.reject(new Error('Bellite client not connected'))
     return res.promise;}
 
 Bellite.prototype.close = function() {
