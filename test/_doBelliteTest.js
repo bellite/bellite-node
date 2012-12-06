@@ -11,8 +11,7 @@
 var bellite=require('../bellite.js'),
     app = bellite.Bellite();
 
-//console.log("testBellite!", process.env.BELLITE_SERVER)
-app.on('ready', function() {
+app.ready.done(function() {
     app.ping()
     app.version()
 
