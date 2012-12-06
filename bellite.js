@@ -107,7 +107,10 @@ Bellite.prototype.on_rpc_response = function(msg) {
     if (tgt==null) return
     if (msg.error!==undefined)
         tgt.reject(msg.error)
-    else tgt.resolve(msg.result) }
+    else if (msg.result[0])
+        tgt.reject(msg.result)
+    else
+        tgt.resolve(msg.result) }
 Bellite.prototype.on_rpc_call = function(msg) {
     var args=msg.params;
     if (msg.method == 'event')

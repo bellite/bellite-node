@@ -1,6 +1,6 @@
 {
   "name": "bellite",
-  "version": "1.4.7",
+  "version": "1.4.11",
   "license": "MIT",
   "description": "Deliver desktop applications on Mac OSX and Windows XP/7/8 using Bellite.io.",
   "homepage": "http://bellite.io/info/node-pkg",
