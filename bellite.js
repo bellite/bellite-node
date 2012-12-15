@@ -37,8 +37,6 @@ util.inherits(Bellite, events.EventEmitter);
 Bellite.prototype._connect_jsonrpc = function(cred, f_ready) {
     var self=this, connBuf='', conn = net.connect(cred);
     conn.setEncoding("UTF-8");
-    conn.setNoDelay(true);
-    conn.setKeepAlive(true, 0);
 
     conn.on('error', function(err) {
         if (self._logging!==false)
@@ -47,6 +45,7 @@ Bellite.prototype._connect_jsonrpc = function(cred, f_ready) {
         conn.destroy();
         self.emit('conn_error', err); })
     conn.on('connect', function() {
+        try { conn.setNoDelay(true); conn.setKeepAlive(true, 0) } catch (err) {}
         self.emit('connect') });
     conn.on('data', function(data) {
         data = (connBuf+data).split('\0')
