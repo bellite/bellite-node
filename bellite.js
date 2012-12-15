@@ -55,7 +55,7 @@ Bellite.prototype._connect_jsonrpc = function(cred, f_ready) {
     conn.on('close', function() {
         conn = null; self.emit('close') })
     self._sendMessage = function sendMessage(msg) {
-        return conn!==null ? conn.write(msg+'\0'), false : true }
+        return conn!==null ? (conn.write(msg+'\0'), true) : false }
     self._shutdown = function() { conn.end() }
     return conn;
 }
