@@ -42,20 +42,21 @@ Bellite.prototype._connect_jsonrpc = function(cred, f_ready) {
         if (self._logging!==false)
             console.warn('Error connecting to Bellite server', cred, err, self._logging)
         f_ready.reject(err);
-        conn.destroy();
-        self.emit('conn_error', err); })
+        conn.destroySoon();
+        self.emit('conn_error', err) })
     conn.on('connect', function() {
-        try { conn.setNoDelay(true); conn.setKeepAlive(true, 0) } catch (err) {}
+        try { conn.setNoDelay(true); conn.setKeepAlive(true, 0)
+        } catch (err) {} // make sure Windows XP doesn't complain
         self.emit('connect') });
     conn.on('data', function(data) {
         data = (connBuf+data).split('\0')
         connBuf = data.pop()
-        self._recvJsonRpc(data); });
+        self._recvJsonRpc(data) });
     conn.on('close', function() {
-        self.emit('close') })
+        conn = null; self.emit('close') })
     self._sendMessage = function sendMessage(msg) {
-        return conn.write(msg+'\0') }
-    self._shutdown = function() { conn.end(); }
+        return conn!==null ? conn.write(msg+'\0'), false : true }
+    self._shutdown = function() { conn.end() }
     return conn;
 }
 Bellite.prototype.findCredentials = function(cred) {
@@ -99,7 +100,7 @@ Bellite.prototype._recvJsonRpc = function recvJsonRpc(msgList) {
         else this.on_rpc_response(msg)
     } }
 Bellite.prototype.on_rpc_error = function(err, msg) {
-    console.error("Bellite JSON-RPC error: ", err); }
+    console.error("Bellite JSON-RPC error: ", err) }
 Bellite.prototype.on_rpc_response = function(msg) {
     var tgt=this._resultMap[msg.id];
     delete this._resultMap[msg.id];
@@ -123,10 +124,10 @@ Bellite.prototype._invoke = function(method, params) {
     this._resultMap[id] = res;
     if (!this._sendJsonRpc(method, params, id))
         res.reject(new Error('Bellite client not connected'))
-    return res.promise;}
+    return res.promise }
 
 Bellite.prototype.close = function() {
-    return this._shutdown(); }
+    return this._shutdown() }
 Bellite.prototype.auth = function(token) {
     return this._invoke('auth', [token]) }
 Bellite.prototype.version = function() {
@@ -143,11 +144,11 @@ Bellite.prototype.bindEvent = function(selfId, evtType, res, ctx) {
     if (!selfId) selfId = 0;
     if (evtType===undefined) evtType = null;
     if (res===undefined) res = -1;
-    return this._invoke('bindEvent', [selfId, evtType, res, ctx]); }
+    return this._invoke('bindEvent', [selfId, evtType, res, ctx]) }
 Bellite.prototype.unbindEvent = function(selfId, evtType) {
     if (!selfId) selfId = 0;
     if (evtType==undefined) evtType = null;
-    return this._invoke('unbindEvent', [selfId, evtType]); }
+    return this._invoke('unbindEvent', [selfId, evtType]) }
 
 Bellite.prototype.on_connect = function(cred, f_ready) {
     this.auth(cred.token)
