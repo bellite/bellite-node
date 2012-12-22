@@ -23,7 +23,7 @@ function Bellite(cred, logging) {
     this._logging = logging ? true : (logging!=null ? false : null);
 
     cred = this.findCredentials(cred);
-    if (cred == null)
+    if (cred==null)
         throw new Error("Invalid Bellite credentials");
 
     var f_ready = deferred();
@@ -60,14 +60,14 @@ Bellite.prototype._connect_jsonrpc = function(cred, f_ready) {
     return conn;
 }
 Bellite.prototype.findCredentials = function(cred) {
-    if (cred == null) {
+    if (cred==null) {
         cred = process.env.BELLITE_SERVER;
         if (!cred) {
             cred = '127.0.0.1:3099/bellite-demo-host';
             if (this._logging!==false)
                 console.warn('BELLITE_SERVER environment variable not found, using "'+cred+'"', this._logging)
         }
-    } else if (cred.split === undefined)
+    } else if (cred.split===undefined)
         return cred;
     var res={credentials:cred};
     cred = cred.split('/',2);
@@ -104,7 +104,7 @@ Bellite.prototype.on_rpc_error = function(err, msg) {
 Bellite.prototype.on_rpc_response = function(msg) {
     var tgt=this._resultMap[msg.id];
     delete this._resultMap[msg.id];
-    if (tgt==null) return
+    if (tgt===undefined) return
     if (msg.error!==undefined)
         tgt.reject(msg.error)
     else if (msg.result[0])
@@ -113,7 +113,7 @@ Bellite.prototype.on_rpc_response = function(msg) {
         tgt.resolve(msg.result) }
 Bellite.prototype.on_rpc_call = function(msg) {
     var args=msg.params;
-    if (msg.method == 'event')
+    if (msg.method==='event')
         this.emit(args.evtType, args) }
 
 Bellite.prototype._nextId = 100;
@@ -147,7 +147,7 @@ Bellite.prototype.bindEvent = function(selfId, evtType, res, ctx) {
     return this._invoke('bindEvent', [selfId, evtType, res, ctx]) }
 Bellite.prototype.unbindEvent = function(selfId, evtType) {
     if (!selfId) selfId = 0;
-    if (evtType==undefined) evtType = null;
+    if (evtType===undefined) evtType = null;
     return this._invoke('unbindEvent', [selfId, evtType]) }
 
 Bellite.prototype.on_connect = function(cred, f_ready) {
