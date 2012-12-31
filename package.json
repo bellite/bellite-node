@@ -1,9 +1,9 @@
 {
   "name": "bellite",
-  "version": "1.4.11",
+  "version": "1.4.17",
   "license": "MIT",
   "description": "Deliver desktop applications on Mac OSX and Windows XP/7/8 using Bellite.io.",
-  "homepage": "http://bellite.io/info/node-pkg",
+  "homepage": "https://github.com/bellite/bellite-node",
   "author": {"name":"Shane Holloway", "email":"shane@bellite.io"},
   "bugs": {"email": "support@bellite.io", "url":"https://github.com/bellite/bellite-node/issues"},
   "readmeFilename": "README.md",
