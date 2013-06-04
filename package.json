@@ -1,6 +1,6 @@
 {
   "name": "bellite",
-  "version": "1.4.22",
+  "version": "1.4.24",
   "license": "MIT",
   "description": "Create desktop applications for Mac OSX (10.7 & 10.8) and Windows XP, 7 & 8 using modern web technology and Node.js (Python || Ruby || PHP || Java).",
   "homepage": "https://github.com/bellite/bellite-node",
@@ -15,7 +15,7 @@
     "type": "git",
     "url": "https://github.com/bellite/bellite-node.git"},
 
-  "dependencies": {"fate": "*"},
+  "dependencies": {"fate": "0.5.*"},
 
   "main": "bellite.js",
   "scripts": { "test": "node ./test/testClientJSONRPC.js" }
